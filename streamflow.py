@@ -1,33 +1,47 @@
 # -*- coding: utf-8 -*-
 
-
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
-array1 = np.genfromtxt('June-2021-Provo-River-Streamflow-Rates.csv', delimiter=',',dtype=str,skip_header=1)
-x = array1[:, 0].astype('datetime64')
-y_1 = array1[:,1].astype(float)
-y_2 = array1[:,2].astype(float)
-y_3 = array1[:,3].astype(float)
-y_4 = array1[:,4].astype(float)
-y_5 = array1[:,5].astype(float)
 
-# y_1 - Site 10163000
-# y_2 - Site 10155200
-# y_3 - Site 10155500
-# y_4 - Site 10154200
-# y_5 - Site 10155000
+def load_streamflow(filename):
+    """Read the streamflow CSV. Return the dates and a 2D array of flows (cfs), one column per gauge."""
 
-plt.plot(x, y_1, label='10163000', color='purple')
-plt.plot(x, y_2, label='10155200', color='blue')
-plt.plot(x, y_3, label='10155500', color='green')
-plt.plot(x, y_4, label='10154200', color='orange')
-plt.plot(x, y_5, label='10155000', color='red')
+    data = np.genfromtxt(
+        filename,
+        delimiter=',',
+        dtype=str,
+        skip_header=1
+    )
 
-plt.xlabel('Date')
-plt.ylabel('Flowrate (cfs)')
-plt.title('Provo River Streamflow Data (2021)')
-plt.grid(True)
-plt.legend(title='Site Numbers', loc='upper right')
-plt.show()
+    dates = data[:, 0].astype('datetime64')
+    flows = data[:, 1:6].astype(float)
 
+    return dates, flows
+
+
+def plot_streamflow(dates, flows, sites):
+    """Plot the flow at each gauge, with the same title, labels, and formatting as the Matplotlib HW."""
+
+    colors = ['purple', 'blue', 'green', 'orange', 'red']
+
+    for i in range(len(sites)):
+        plt.plot(dates, flows[:, i], label=sites[i], color=colors[i])
+
+    plt.xlabel('Date')
+    plt.ylabel('Flowrate (cfs)')
+    plt.title('Provo River Streamflow Data (2021)')
+    plt.grid(True)
+    plt.legend(title='Site Numbers', loc='upper right')
+
+    plt.show()
+
+
+# Main program
+sites = ["10163000", "10155200", "10155500", "10154200", "10155000"]
+
+dates, flows = load_streamflow(
+    "June-2021-Provo-River-Streamflow-Rates.csv"
+)
+
+plot_streamflow(dates, flows, sites)
